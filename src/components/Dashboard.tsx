@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Container,
   Grid,
@@ -26,6 +26,8 @@ import { HealthInsights } from './HealthInsights';
 import { NotificationSystem } from './NotificationSystem';
 import { useTheme } from '../context/ThemeContext';
 import { mockData, generateMockData, HealthData } from '../data/mockData';
+import { GoalTracker } from './GoalTracker';
+import { HealthTips } from './HealthTips';
 
 export const Dashboard: React.FC = () => {
   const [data, setData] = useState<HealthData[]>(mockData);
@@ -140,49 +142,110 @@ export const Dashboard: React.FC = () => {
       </Grid>
 
       <Grid container spacing={3}>
+        <Grid item xs={12} md={8}>
+          <Grid container spacing={3}>
+            <Grid item xs={12} sm={6} md={4}>
+              <HealthMetricCard
+                title="Steps"
+                value={latestData.steps}
+                icon="👣"
+                color="#4CAF50"
+                isLoading={isLoading}
+              />
+            </Grid>
+            <Grid item xs={12} sm={6} md={4}>
+              <HealthMetricCard
+                title="Heart Rate"
+                value={latestData.heartRate}
+                icon="❤️"
+                color="#F44336"
+                isLoading={isLoading}
+              />
+            </Grid>
+            <Grid item xs={12} sm={6} md={4}>
+              <HealthMetricCard
+                title="Calories"
+                value={latestData.caloriesBurned}
+                icon="🔥"
+                color="#FF9800"
+                isLoading={isLoading}
+              />
+            </Grid>
+            <Grid item xs={12} sm={6} md={4}>
+              <HealthMetricCard
+                title="Sleep"
+                value={latestData.sleepHours}
+                icon="😴"
+                color="#2196F3"
+                isLoading={isLoading}
+              />
+            </Grid>
+            <Grid item xs={12} sm={6} md={4}>
+              <HealthMetricCard
+                title="Active Time"
+                value={latestData.activeMinutes}
+                icon="⏱️"
+                color="#9C27B0"
+                isLoading={isLoading}
+              />
+            </Grid>
+          </Grid>
+        </Grid>
+
+        <Grid item xs={12} md={4}>
+          <HealthTips />
+        </Grid>
+
         <Grid item xs={12} md={6}>
-          <Paper sx={{ p: 3 }}>
-            <HealthChart
-              data={data}
-              metric="steps"
-              title="Daily Steps"
-              color="#2196f3"
-              yAxisLabel="Steps"
-            />
-          </Paper>
+          <GoalTracker
+            data={latestData}
+            metric="steps"
+            title="Daily Steps"
+            color="#4CAF50"
+            defaultGoal={10000}
+          />
         </Grid>
         <Grid item xs={12} md={6}>
-          <Paper sx={{ p: 3 }}>
-            <HealthChart
-              data={data}
-              metric="heartRate"
-              title="Heart Rate"
-              color="#f44336"
-              yAxisLabel="BPM"
-            />
-          </Paper>
+          <GoalTracker
+            data={latestData}
+            metric="activeMinutes"
+            title="Active Minutes"
+            color="#9C27B0"
+            defaultGoal={60}
+          />
+        </Grid>
+
+        <Grid item xs={12} md={6}>
+          <HealthChart
+            data={data}
+            metric="steps"
+            title="Daily Steps"
+            color="#4CAF50"
+          />
         </Grid>
         <Grid item xs={12} md={6}>
-          <Paper sx={{ p: 3 }}>
-            <HealthChart
-              data={data}
-              metric="caloriesBurned"
-              title="Calories Burned"
-              color="#ff9800"
-              yAxisLabel="Calories"
-            />
-          </Paper>
+          <HealthChart
+            data={data}
+            metric="heartRate"
+            title="Heart Rate"
+            color="#F44336"
+          />
         </Grid>
         <Grid item xs={12} md={6}>
-          <Paper sx={{ p: 3 }}>
-            <HealthChart
-              data={data}
-              metric="sleepHours"
-              title="Sleep Duration"
-              color="#9c27b0"
-              yAxisLabel="Hours"
-            />
-          </Paper>
+          <HealthChart
+            data={data}
+            metric="caloriesBurned"
+            title="Calories Burned"
+            color="#FF9800"
+          />
+        </Grid>
+        <Grid item xs={12} md={6}>
+          <HealthChart
+            data={data}
+            metric="sleepHours"
+            title="Sleep Duration"
+            color="#2196F3"
+          />
         </Grid>
       </Grid>
 
