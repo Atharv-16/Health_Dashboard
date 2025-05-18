@@ -13,8 +13,17 @@ export const HealthChart: React.FC<HealthChartProps> = ({
   metric,
   title,
 }) => {
+  if (!data || data.length === 0) {
+    return (
+      <Paper elevation={2} sx={{ p: 3, height: '300px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <Typography color="text.secondary">No data available</Typography>
+      </Paper>
+    );
+  }
+
   const maxValue = Math.max(...data.map(d => d[metric] as number));
   const minValue = Math.min(...data.map(d => d[metric] as number));
+  const range = maxValue - minValue;
 
   return (
     <Paper
@@ -40,7 +49,7 @@ export const HealthChart: React.FC<HealthChartProps> = ({
       >
         {data.map((item, index) => {
           const value = item[metric] as number;
-          const height = ((value - minValue) / (maxValue - minValue)) * 100;
+          const height = range === 0 ? 50 : ((value - minValue) / range) * 100;
           
           return (
             <Box
@@ -60,10 +69,14 @@ export const HealthChart: React.FC<HealthChartProps> = ({
                   backgroundColor: 'primary.main',
                   borderRadius: '4px 4px 0 0',
                   transition: 'height 0.3s ease',
+                  minHeight: '4px',
                 }}
               />
               <Typography variant="caption" color="text.secondary">
-                {new Date(item.timestamp).toLocaleDateString('en-US', { weekday: 'short' })}
+                {new Date(item.lastSync).toLocaleDateString('en-US', { weekday: 'short' })}
+              </Typography>
+              <Typography variant="caption" color="text.secondary">
+                {value.toLocaleString()}
               </Typography>
             </Box>
           );

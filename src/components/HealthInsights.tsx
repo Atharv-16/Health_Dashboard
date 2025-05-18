@@ -8,6 +8,17 @@ interface HealthInsightsProps {
 }
 
 export const HealthInsights: React.FC<HealthInsightsProps> = ({ data }) => {
+  if (!data || data.length < 2) {
+    return (
+      <Paper elevation={2} sx={{ p: 3 }}>
+        <Typography variant="h6" gutterBottom>
+          Health Insights
+        </Typography>
+        <Typography color="text.secondary">Not enough data for insights</Typography>
+      </Paper>
+    );
+  }
+
   const getTrend = (current: number, previous: number) => {
     const diff = current - previous;
     const percentage = (diff / previous) * 100;
