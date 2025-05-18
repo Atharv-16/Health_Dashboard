@@ -14,6 +14,8 @@ import {
   FileDownload as FileDownloadIcon,
   DarkMode as DarkModeIcon,
   LightMode as LightModeIcon,
+  Flag as FlagIcon,
+  TipsAndUpdates as TipsIcon,
 } from '@mui/icons-material';
 import { HealthMetricCard } from './HealthMetricCard';
 import { HealthChart } from './HealthChart';
@@ -113,7 +115,7 @@ export const Dashboard: React.FC = () => {
               <Grid item xs={12} md={6}>
                 <CollapsibleSection
                   title="Goals"
-                  icon={<FileDownloadIcon />}
+                  icon={<FlagIcon />}
                   defaultExpanded={true}
                 >
                   <Grid container spacing={2}>
@@ -139,7 +141,7 @@ export const Dashboard: React.FC = () => {
               <Grid item xs={12}>
                 <CollapsibleSection
                   title="Health Tips"
-                  icon={<FileDownloadIcon />}
+                  icon={<TipsIcon />}
                   defaultExpanded={true}
                 >
                   <HealthTips />

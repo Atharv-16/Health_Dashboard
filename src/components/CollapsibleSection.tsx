@@ -10,7 +10,6 @@ import {
   ExpandMore as ExpandMoreIcon,
   ExpandLess as ExpandLessIcon,
 } from '@mui/icons-material';
-import { motion } from 'framer-motion';
 
 interface CollapsibleSectionProps {
   title: string;
@@ -57,14 +56,7 @@ export const CollapsibleSection: React.FC<CollapsibleSectionProps> = ({
         onClick={handleToggle}
       >
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-          {icon && (
-            <motion.div
-              animate={{ rotate: expanded ? 180 : 0 }}
-              transition={{ duration: 0.3 }}
-            >
-              {icon}
-            </motion.div>
-          )}
+          {icon}
           <Typography variant="h6">{title}</Typography>
         </Box>
         <IconButton size="small">

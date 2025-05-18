@@ -21,9 +21,24 @@ export const HealthChart: React.FC<HealthChartProps> = ({
     );
   }
 
-  const maxValue = Math.max(...data.map(d => d[metric] as number));
-  const minValue = Math.min(...data.map(d => d[metric] as number));
+  // Filter out non-numeric values and calculate min/max
+  const values = data.map(d => d[metric] as number).filter(v => !isNaN(v));
+  const maxValue = Math.max(...values);
+  const minValue = Math.min(...values);
   const range = maxValue - minValue;
+
+  // Get appropriate unit based on metric
+  const getUnit = () => {
+    switch (metric) {
+      case 'steps': return 'steps';
+      case 'heartRate': return 'bpm';
+      case 'sleepHours': return 'hrs';
+      case 'activeMinutes': return 'min';
+      case 'caloriesBurned': return 'kcal';
+      case 'waterIntake': return 'glasses';
+      default: return '';
+    }
+  };
 
   return (
     <Paper
@@ -49,7 +64,8 @@ export const HealthChart: React.FC<HealthChartProps> = ({
       >
         {data.map((item, index) => {
           const value = item[metric] as number;
-          const height = range === 0 ? 50 : ((value - minValue) / range) * 100;
+          // Calculate height as percentage of range, with minimum height of 4px
+          const height = range === 0 ? 50 : Math.max(4, ((value - minValue) / range) * 100);
           
           return (
             <Box
@@ -76,7 +92,7 @@ export const HealthChart: React.FC<HealthChartProps> = ({
                 {new Date(item.lastSync).toLocaleDateString('en-US', { weekday: 'short' })}
               </Typography>
               <Typography variant="caption" color="text.secondary">
-                {value.toLocaleString()}
+                {value.toLocaleString()} {getUnit()}
               </Typography>
             </Box>
           );
