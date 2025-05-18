@@ -15,7 +15,7 @@ export const HealthChart: React.FC<HealthChartProps> = ({
 }) => {
   if (!data || data.length === 0) {
     return (
-      <Paper elevation={2} sx={{ p: 3, height: '300px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <Paper elevation={2} sx={{ p: 3, height: '400px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <Typography color="text.secondary">No data available</Typography>
       </Paper>
     );
@@ -45,12 +45,12 @@ export const HealthChart: React.FC<HealthChartProps> = ({
       elevation={2}
       sx={{
         p: 3,
-        height: '300px',
+        height: '400px',
         display: 'flex',
         flexDirection: 'column',
       }}
     >
-      <Typography variant="h6" gutterBottom>
+      <Typography variant="h6" gutterBottom sx={{ mb: 3 }}>
         {title}
       </Typography>
       <Box
@@ -59,13 +59,15 @@ export const HealthChart: React.FC<HealthChartProps> = ({
           display: 'flex',
           alignItems: 'flex-end',
           gap: 1,
-          mt: 2,
+          height: '250px', // Reduced height to match heart rate card
+          position: 'relative',
+          pt: 2,
         }}
       >
         {data.map((item, index) => {
           const value = item[metric] as number;
-          // Calculate height as percentage of range, with minimum height of 4px
-          const height = range === 0 ? 50 : Math.max(4, ((value - minValue) / range) * 100);
+          // Calculate height as percentage of max value, with a maximum of 80% of container height
+          const height = Math.min(80, (value / maxValue) * 100);
           
           return (
             <Box
@@ -76,24 +78,44 @@ export const HealthChart: React.FC<HealthChartProps> = ({
                 flexDirection: 'column',
                 alignItems: 'center',
                 gap: 1,
+                height: '100%',
+                position: 'relative',
               }}
             >
               <Box
                 sx={{
-                  width: '100%',
+                  position: 'absolute',
+                  bottom: '50px',
+                  left: 0,
+                  right: 0,
                   height: `${height}%`,
                   backgroundColor: 'primary.main',
                   borderRadius: '4px 4px 0 0',
                   transition: 'height 0.3s ease',
                   minHeight: '4px',
+                  opacity: 0.8,
+                  '&:hover': {
+                    opacity: 1,
+                  },
                 }}
               />
-              <Typography variant="caption" color="text.secondary">
-                {new Date(item.lastSync).toLocaleDateString('en-US', { weekday: 'short' })}
-              </Typography>
-              <Typography variant="caption" color="text.secondary">
-                {value.toLocaleString()} {getUnit()}
-              </Typography>
+              <Box
+                sx={{
+                  position: 'absolute',
+                  bottom: 0,
+                  left: 0,
+                  right: 0,
+                  textAlign: 'center',
+                  height: '50px',
+                }}
+              >
+                <Typography variant="caption" color="text.secondary">
+                  {new Date(item.lastSync).toLocaleDateString('en-US', { weekday: 'short' })}
+                </Typography>
+                <Typography variant="caption" color="text.secondary" display="block">
+                  {value.toLocaleString()} {getUnit()}
+                </Typography>
+              </Box>
             </Box>
           );
         })}

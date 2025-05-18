@@ -16,6 +16,7 @@ import {
   LightMode as LightModeIcon,
   Flag as FlagIcon,
   TipsAndUpdates as TipsIcon,
+  Favorite,
 } from '@mui/icons-material';
 import { HealthMetricCard } from './HealthMetricCard';
 import { HealthChart } from './HealthChart';
@@ -29,6 +30,7 @@ import { FadeInSection } from './FadeInSection';
 import { CollapsibleSection } from './CollapsibleSection';
 import { useTheme as useAppTheme } from '../context/ThemeContext';
 import { generateMockData, HealthData } from '../data/mockData';
+import { HeartRateCard } from './HeartRateCard';
 
 export const Dashboard: React.FC = () => {
   const [healthData, setHealthData] = useState<HealthData[]>([]);
@@ -154,7 +156,16 @@ export const Dashboard: React.FC = () => {
         return (
           <FadeInSection delay={0.2}>
             <Grid container spacing={3}>
-              <Grid item xs={12}>
+              <Grid item xs={12} md={6}>
+                <CollapsibleSection
+                  title="Heart Rate"
+                  icon={<Favorite color="error" />}
+                  defaultExpanded={true}
+                >
+                  <HeartRateCard data={healthData} />
+                </CollapsibleSection>
+              </Grid>
+              <Grid item xs={12} md={6}>
                 <CollapsibleSection
                   title="Daily Activity"
                   icon={<SyncIcon />}
@@ -164,19 +175,6 @@ export const Dashboard: React.FC = () => {
                     data={healthData}
                     metric="steps"
                     title="Daily Steps"
-                  />
-                </CollapsibleSection>
-              </Grid>
-              <Grid item xs={12}>
-                <CollapsibleSection
-                  title="Heart Rate"
-                  icon={<SyncIcon />}
-                  defaultExpanded={true}
-                >
-                  <HealthChart
-                    data={healthData}
-                    metric="heartRate"
-                    title="Heart Rate"
                   />
                 </CollapsibleSection>
               </Grid>

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
   Paper,
   Typography,
@@ -6,14 +6,12 @@ import {
   IconButton,
   Collapse,
 } from '@mui/material';
-import {
-  ExpandMore as ExpandMoreIcon,
-  ExpandLess as ExpandLessIcon,
-} from '@mui/icons-material';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 
 interface CollapsibleSectionProps {
   title: string;
-  icon?: React.ReactNode;
+  icon: React.ReactNode;
   children: React.ReactNode;
   defaultExpanded?: boolean;
 }
@@ -22,9 +20,9 @@ export const CollapsibleSection: React.FC<CollapsibleSectionProps> = ({
   title,
   icon,
   children,
-  defaultExpanded = false,
+  defaultExpanded = true,
 }) => {
-  const [expanded, setExpanded] = useState(defaultExpanded);
+  const [expanded, setExpanded] = React.useState(defaultExpanded);
 
   const handleToggle = () => {
     setExpanded(!expanded);
@@ -34,7 +32,7 @@ export const CollapsibleSection: React.FC<CollapsibleSectionProps> = ({
     <Paper
       elevation={2}
       sx={{
-        overflow: 'hidden',
+        p: 3,
         transition: 'all 0.3s ease',
         '&:hover': {
           boxShadow: (theme) =>
@@ -46,7 +44,6 @@ export const CollapsibleSection: React.FC<CollapsibleSectionProps> = ({
     >
       <Box
         sx={{
-          p: 2,
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
@@ -59,12 +56,18 @@ export const CollapsibleSection: React.FC<CollapsibleSectionProps> = ({
           {icon}
           <Typography variant="h6">{title}</Typography>
         </Box>
-        <IconButton size="small">
+        <IconButton
+          size="small"
+          sx={{
+            transition: 'transform 0.3s ease',
+            transform: expanded ? 'rotate(180deg)' : 'rotate(0deg)',
+          }}
+        >
           {expanded ? <ExpandLessIcon /> : <ExpandMoreIcon />}
         </IconButton>
       </Box>
-      <Collapse in={expanded}>
-        <Box sx={{ p: 2 }}>{children}</Box>
+      <Collapse in={expanded} timeout={300}>
+        <Box sx={{ mt: 2 }}>{children}</Box>
       </Collapse>
     </Paper>
   );
