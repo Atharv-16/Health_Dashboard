@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
   Container,
   Grid,
@@ -7,6 +7,8 @@ import {
   Button,
   Box,
   CircularProgress,
+  IconButton,
+  Tooltip,
 } from '@mui/material';
 import {
   DirectionsWalk,
@@ -14,15 +16,22 @@ import {
   LocalFireDepartment,
   Bedtime,
   Timer,
+  Brightness4,
+  Brightness7,
+  FileDownload,
 } from '@mui/icons-material';
 import { HealthChart } from './HealthChart';
 import { HealthMetricCard } from './HealthMetricCard';
+import { HealthInsights } from './HealthInsights';
+import { NotificationSystem } from './NotificationSystem';
+import { useTheme } from '../context/ThemeContext';
 import { mockData, generateMockData, HealthData } from '../data/mockData';
 
 export const Dashboard: React.FC = () => {
   const [data, setData] = useState<HealthData[]>(mockData);
   const [isLoading, setIsLoading] = useState(false);
   const [lastSync, setLastSync] = useState<Date>(new Date());
+  const { mode, toggleTheme } = useTheme();
 
   const handleSync = () => {
     setIsLoading(true);
@@ -34,6 +43,19 @@ export const Dashboard: React.FC = () => {
     }, 1500);
   };
 
+  const handleExportData = () => {
+    const jsonString = JSON.stringify(data, null, 2);
+    const blob = new Blob([jsonString], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `health-data-${new Date().toISOString().split('T')[0]}.json`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+
   const latestData = data[data.length - 1];
 
   return (
@@ -43,6 +65,16 @@ export const Dashboard: React.FC = () => {
           Health Dashboard
         </Typography>
         <Box display="flex" alignItems="center" gap={2}>
+          <Tooltip title="Export Data">
+            <IconButton onClick={handleExportData} color="primary">
+              <FileDownload />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title={`Switch to ${mode === 'light' ? 'dark' : 'light'} mode`}>
+            <IconButton onClick={toggleTheme} color="primary">
+              {mode === 'light' ? <Brightness4 /> : <Brightness7 />}
+            </IconButton>
+          </Tooltip>
           <Typography variant="body2" color="text.secondary">
             Last synced: {lastSync.toLocaleTimeString()}
           </Typography>
@@ -56,6 +88,8 @@ export const Dashboard: React.FC = () => {
           </Button>
         </Box>
       </Box>
+
+      <HealthInsights data={data} />
 
       <Grid container spacing={3} mb={4}>
         <Grid item xs={12} sm={6} md={2.4}>
@@ -151,6 +185,8 @@ export const Dashboard: React.FC = () => {
           </Paper>
         </Grid>
       </Grid>
+
+      <NotificationSystem data={data} onSync={handleSync} />
     </Container>
   );
 }; 
