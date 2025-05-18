@@ -1,86 +1,74 @@
 import React from 'react';
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Legend,
-  ChartOptions,
-} from 'chart.js';
-import { Line } from 'react-chartjs-2';
+import { Paper, Typography, Box } from '@mui/material';
 import { HealthData } from '../data/mockData';
-
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Legend
-);
 
 interface HealthChartProps {
   data: HealthData[];
-  metric: keyof Omit<HealthData, 'date'>;
+  metric: keyof HealthData;
   title: string;
-  color: string;
-  yAxisLabel: string;
 }
 
 export const HealthChart: React.FC<HealthChartProps> = ({
   data,
   metric,
   title,
-  color,
-  yAxisLabel,
 }) => {
-  const chartData = {
-    labels: data.map((d) => d.date),
-    datasets: [
-      {
-        label: title,
-        data: data.map((d) => d[metric]),
-        borderColor: color,
-        backgroundColor: color + '40',
-        tension: 0.4,
-        fill: true,
-      },
-    ],
-  };
+  const maxValue = Math.max(...data.map(d => d[metric] as number));
+  const minValue = Math.min(...data.map(d => d[metric] as number));
 
-  const options: ChartOptions<'line'> = {
-    responsive: true,
-    plugins: {
-      legend: {
-        position: 'top' as const,
-      },
-      title: {
-        display: true,
-        text: title,
-      },
-      tooltip: {
-        mode: 'index',
-        intersect: false,
-      },
-    },
-    scales: {
-      y: {
-        title: {
-          display: true,
-          text: yAxisLabel,
-        },
-      },
-    },
-    interaction: {
-      mode: 'nearest',
-      axis: 'x',
-      intersect: false,
-    },
-  };
-
-  return <Line data={chartData} options={options} />;
+  return (
+    <Paper
+      elevation={2}
+      sx={{
+        p: 3,
+        height: '300px',
+        display: 'flex',
+        flexDirection: 'column',
+      }}
+    >
+      <Typography variant="h6" gutterBottom>
+        {title}
+      </Typography>
+      <Box
+        sx={{
+          flex: 1,
+          display: 'flex',
+          alignItems: 'flex-end',
+          gap: 1,
+          mt: 2,
+        }}
+      >
+        {data.map((item, index) => {
+          const value = item[metric] as number;
+          const height = ((value - minValue) / (maxValue - minValue)) * 100;
+          
+          return (
+            <Box
+              key={index}
+              sx={{
+                flex: 1,
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                gap: 1,
+              }}
+            >
+              <Box
+                sx={{
+                  width: '100%',
+                  height: `${height}%`,
+                  backgroundColor: 'primary.main',
+                  borderRadius: '4px 4px 0 0',
+                  transition: 'height 0.3s ease',
+                }}
+              />
+              <Typography variant="caption" color="text.secondary">
+                {new Date(item.timestamp).toLocaleDateString('en-US', { weekday: 'short' })}
+              </Typography>
+            </Box>
+          );
+        })}
+      </Box>
+    </Paper>
+  );
 }; 

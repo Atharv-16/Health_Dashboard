@@ -1,6 +1,6 @@
 import React from 'react';
-import { Paper, Typography, Box, Chip, IconButton } from '@mui/material';
-import { EmojiEvents, TrendingUp, TrendingDown, Info } from '@mui/icons-material';
+import { Paper, Typography, Box, List, ListItem, ListItemIcon, ListItemText } from '@mui/material';
+import { TrendingUp, TrendingDown, TrendingFlat } from '@mui/icons-material';
 import { HealthData } from '../data/mockData';
 
 interface HealthInsightsProps {
@@ -8,83 +8,75 @@ interface HealthInsightsProps {
 }
 
 export const HealthInsights: React.FC<HealthInsightsProps> = ({ data }) => {
-  const latestData = data[data.length - 1];
-  const previousData = data[data.length - 2];
-
-  const calculateTrend = (current: number, previous: number) => {
-    const change = ((current - previous) / previous) * 100;
-    return {
-      value: Math.abs(change).toFixed(1),
-      isPositive: change > 0,
-    };
+  const getTrend = (current: number, previous: number) => {
+    const diff = current - previous;
+    const percentage = (diff / previous) * 100;
+    
+    if (Math.abs(percentage) < 5) {
+      return { icon: <TrendingFlat />, text: 'Stable', color: 'info.main' };
+    }
+    return percentage > 0
+      ? { icon: <TrendingUp />, text: 'Increasing', color: 'success.main' }
+      : { icon: <TrendingDown />, text: 'Decreasing', color: 'error.main' };
   };
 
   const insights = [
     {
-      title: 'Steps Goal',
-      value: latestData.steps,
-      target: 10000,
-      icon: <EmojiEvents color="primary" />,
-      trend: calculateTrend(latestData.steps, previousData.steps),
+      title: 'Steps',
+      current: data[0]?.steps || 0,
+      previous: data[1]?.steps || 0,
+      unit: 'steps',
     },
     {
       title: 'Heart Rate',
-      value: latestData.heartRate,
-      target: 75,
-      icon: <Info color="secondary" />,
-      trend: calculateTrend(latestData.heartRate, previousData.heartRate),
+      current: data[0]?.heartRate || 0,
+      previous: data[1]?.heartRate || 0,
+      unit: 'bpm',
     },
     {
-      title: 'Sleep Quality',
-      value: latestData.sleepHours,
-      target: 8,
-      icon: <Info color="secondary" />,
-      trend: calculateTrend(latestData.sleepHours, previousData.sleepHours),
+      title: 'Calories',
+      current: data[0]?.caloriesBurned || 0,
+      previous: data[1]?.caloriesBurned || 0,
+      unit: 'kcal',
+    },
+    {
+      title: 'Sleep',
+      current: data[0]?.sleepHours || 0,
+      previous: data[1]?.sleepHours || 0,
+      unit: 'hours',
     },
   ];
 
   return (
-    <Paper sx={{ p: 3, mb: 3 }}>
+    <Paper elevation={2} sx={{ p: 3 }}>
       <Typography variant="h6" gutterBottom>
         Health Insights
       </Typography>
-      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-        {insights.map((insight) => (
-          <Box
-            key={insight.title}
-            sx={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              p: 2,
-              bgcolor: 'background.paper',
-              borderRadius: 1,
-            }}
-          >
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-              {insight.icon}
-              <Box>
-                <Typography variant="subtitle1">{insight.title}</Typography>
-                <Typography variant="body2" color="text.secondary">
-                  {insight.value} / {insight.target} target
-                </Typography>
-              </Box>
-            </Box>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-              {insight.trend.isPositive ? (
-                <TrendingUp color="success" />
-              ) : (
-                <TrendingDown color="error" />
-              )}
-              <Chip
-                size="small"
-                label={`${insight.trend.isPositive ? '+' : '-'}${insight.trend.value}%`}
-                color={insight.trend.isPositive ? 'success' : 'error'}
+      <List>
+        {insights.map((insight) => {
+          const trend = getTrend(insight.current, insight.previous);
+          return (
+            <ListItem key={insight.title}>
+              <ListItemIcon sx={{ color: trend.color }}>
+                {trend.icon}
+              </ListItemIcon>
+              <ListItemText
+                primary={insight.title}
+                secondary={
+                  <Box component="span" sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <Typography component="span" color={trend.color}>
+                      {trend.text}
+                    </Typography>
+                    <Typography component="span" color="text.secondary">
+                      ({insight.current} {insight.unit})
+                    </Typography>
+                  </Box>
+                }
               />
-            </Box>
-          </Box>
-        ))}
-      </Box>
+            </ListItem>
+          );
+        })}
+      </List>
     </Paper>
   );
 }; 

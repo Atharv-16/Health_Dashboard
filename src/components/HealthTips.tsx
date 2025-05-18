@@ -9,80 +9,100 @@ const tips = [
     icon: '💧',
   },
   {
-    title: 'Take Breaks',
-    content: 'Stand up and stretch every hour to reduce sedentary behavior.',
+    title: 'Take Regular Breaks',
+    content: 'Every 30 minutes, take a 5-minute break to stretch and move around.',
     icon: '⏰',
   },
   {
-    title: 'Sleep Well',
-    content: 'Aim for 7-9 hours of sleep for better recovery and performance.',
-    icon: '😴',
-  },
-  {
-    title: 'Move More',
-    content: 'Take the stairs instead of the elevator when possible.',
-    icon: '🚶',
-  },
-  {
-    title: 'Mind Your Posture',
-    content: 'Keep your back straight and shoulders relaxed while sitting.',
+    title: 'Mindful Breathing',
+    content: 'Practice deep breathing exercises to reduce stress and improve focus.',
     icon: '🧘',
+  },
+  {
+    title: 'Healthy Snacking',
+    content: 'Choose nutrient-rich snacks like fruits and nuts for sustained energy.',
+    icon: '🥗',
   },
 ];
 
 export const HealthTips: React.FC = () => {
   const [currentTip, setCurrentTip] = useState(0);
-  const [isAutoPlaying, setIsAutoPlaying] = useState(true);
+  const [isPaused, setIsPaused] = useState(false);
 
   useEffect(() => {
-    let interval: number;
-    if (isAutoPlaying) {
-      interval = window.setInterval(() => {
+    if (!isPaused) {
+      const timer = setInterval(() => {
         setCurrentTip((prev) => (prev + 1) % tips.length);
       }, 5000);
+      return () => clearInterval(timer);
     }
-    return () => clearInterval(interval);
-  }, [isAutoPlaying]);
+  }, [isPaused]);
 
   const handlePrevious = () => {
-    setIsAutoPlaying(false);
     setCurrentTip((prev) => (prev - 1 + tips.length) % tips.length);
+    setIsPaused(true);
   };
 
   const handleNext = () => {
-    setIsAutoPlaying(false);
     setCurrentTip((prev) => (prev + 1) % tips.length);
+    setIsPaused(true);
   };
 
   return (
-    <Paper sx={{ p: 3, mb: 3 }}>
-      <Typography variant="h6" gutterBottom>
-        Health Tips
-      </Typography>
+    <Paper
+      elevation={2}
+      sx={{
+        p: 3,
+        position: 'relative',
+        overflow: 'hidden',
+        '&:hover': {
+          '& .tip-controls': {
+            opacity: 1,
+          },
+        },
+      }}
+    >
       <Box
         sx={{
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
-          gap: 2,
+          mb: 2,
         }}
       >
-        <IconButton onClick={handlePrevious} color="primary">
-          <NavigateBefore />
-        </IconButton>
+        <Typography variant="h6">Health Tips</Typography>
         <Box
           sx={{
-            flex: 1,
-            textAlign: 'center',
-            minHeight: 100,
             display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'center',
+            gap: 1,
           }}
         >
-          <Typography variant="h4" sx={{ mb: 1 }}>
-            {tips[currentTip].icon}
-          </Typography>
+          {tips.map((_, index) => (
+            <Box
+              key={index}
+              sx={{
+                width: 8,
+                height: 8,
+                borderRadius: '50%',
+                backgroundColor: currentTip === index ? 'primary.main' : 'action.disabled',
+                transition: 'background-color 0.3s',
+              }}
+            />
+          ))}
+        </Box>
+      </Box>
+      <Box
+        sx={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: 2,
+          minHeight: 100,
+        }}
+      >
+        <Typography variant="h2" component="div">
+          {tips[currentTip].icon}
+        </Typography>
+        <Box>
           <Typography variant="subtitle1" gutterBottom>
             {tips[currentTip].title}
           </Typography>
@@ -90,30 +110,40 @@ export const HealthTips: React.FC = () => {
             {tips[currentTip].content}
           </Typography>
         </Box>
-        <IconButton onClick={handleNext} color="primary">
-          <NavigateNext />
-        </IconButton>
       </Box>
       <Box
+        className="tip-controls"
         sx={{
+          position: 'absolute',
+          top: '50%',
+          left: 0,
+          right: 0,
           display: 'flex',
-          justifyContent: 'center',
-          gap: 1,
-          mt: 2,
+          justifyContent: 'space-between',
+          transform: 'translateY(-50%)',
+          opacity: 0,
+          transition: 'opacity 0.3s',
+          px: 2,
         }}
       >
-        {tips.map((_, index) => (
-          <Box
-            key={index}
-            sx={{
-              width: 8,
-              height: 8,
-              borderRadius: '50%',
-              bgcolor: index === currentTip ? 'primary.main' : 'grey.300',
-              transition: 'background-color 0.3s',
-            }}
-          />
-        ))}
+        <IconButton
+          onClick={handlePrevious}
+          sx={{
+            backgroundColor: 'background.paper',
+            '&:hover': { backgroundColor: 'action.hover' },
+          }}
+        >
+          <NavigateBefore />
+        </IconButton>
+        <IconButton
+          onClick={handleNext}
+          sx={{
+            backgroundColor: 'background.paper',
+            '&:hover': { backgroundColor: 'action.hover' },
+          }}
+        >
+          <NavigateNext />
+        </IconButton>
       </Box>
     </Paper>
   );

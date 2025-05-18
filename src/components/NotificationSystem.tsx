@@ -1,95 +1,96 @@
-import React, { useState, useEffect } from 'react';
-import { Snackbar, Alert, IconButton } from '@mui/material';
-import { Close, Notifications } from '@mui/icons-material';
-import { HealthData } from '../data/mockData';
+import React, { useState } from 'react';
+import {
+  Box,
+  IconButton,
+  Badge,
+  Menu,
+  MenuItem,
+  Typography,
+  List,
+  ListItem,
+  ListItemText,
+  ListItemIcon,
+} from '@mui/material';
+import {
+  Notifications as NotificationsIcon,
+  EmojiEvents as EmojiEventsIcon,
+  Warning as WarningIcon,
+  AccessTime as AccessTimeIcon,
+} from '@mui/icons-material';
 
-interface Notification {
-  id: number;
-  message: string;
-  type: 'success' | 'info' | 'warning' | 'error';
-}
+export const NotificationSystem: React.FC = () => {
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [notifications] = useState([
+    {
+      id: 1,
+      type: 'achievement',
+      message: 'Congratulations! You reached your daily step goal!',
+      icon: <EmojiEventsIcon color="primary" />,
+      time: '2 hours ago',
+    },
+    {
+      id: 2,
+      type: 'alert',
+      message: 'Your heart rate is higher than usual',
+      icon: <WarningIcon color="error" />,
+      time: '1 hour ago',
+    },
+    {
+      id: 3,
+      type: 'reminder',
+      message: 'Time to take a break and stretch',
+      icon: <AccessTimeIcon color="info" />,
+      time: '30 minutes ago',
+    },
+  ]);
 
-interface NotificationSystemProps {
-  data: HealthData[];
-  onSync: () => void;
-}
-
-export const NotificationSystem: React.FC<NotificationSystemProps> = ({ data, onSync }) => {
-  const [notifications, setNotifications] = useState<Notification[]>([]);
-  const [currentNotification, setCurrentNotification] = useState<Notification | null>(null);
-
-  const generateNotification = (data: HealthData): Notification | null => {
-    const latestData = data;
-    
-    if (latestData.steps >= 10000) {
-      return {
-        id: Date.now(),
-        message: '🎉 Congratulations! You\'ve reached your daily step goal!',
-        type: 'success',
-      };
-    }
-    
-    if (latestData.heartRate > 90) {
-      return {
-        id: Date.now(),
-        message: '⚠️ Your heart rate is elevated. Consider taking a break.',
-        type: 'warning',
-      };
-    }
-    
-    if (latestData.sleepHours < 7) {
-      return {
-        id: Date.now(),
-        message: '💤 You\'re getting less sleep than recommended.',
-        type: 'info',
-      };
-    }
-
-    return null;
+  const handleClick = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
   };
 
-  useEffect(() => {
-    const notification = generateNotification(data[data.length - 1]);
-    if (notification) {
-      setNotifications((prev) => [...prev, notification]);
-    }
-  }, [data]);
-
-  useEffect(() => {
-    if (notifications.length > 0 && !currentNotification) {
-      setCurrentNotification(notifications[0]);
-    }
-  }, [notifications, currentNotification]);
-
   const handleClose = () => {
-    setCurrentNotification(null);
-    setNotifications((prev) => prev.slice(1));
+    setAnchorEl(null);
   };
 
   return (
-    <>
+    <Box sx={{ position: 'fixed', top: 16, right: 16, zIndex: 1000 }}>
       <IconButton
-        color="primary"
-        onClick={onSync}
-        sx={{ position: 'fixed', bottom: 16, right: 16, bgcolor: 'background.paper' }}
+        color="inherit"
+        onClick={handleClick}
+        sx={{
+          backgroundColor: 'background.paper',
+          '&:hover': {
+            backgroundColor: 'action.hover',
+          },
+        }}
       >
-        <Notifications />
+        <Badge badgeContent={notifications.length} color="error">
+          <NotificationsIcon />
+        </Badge>
       </IconButton>
-      <Snackbar
-        open={!!currentNotification}
-        autoHideDuration={6000}
+      <Menu
+        anchorEl={anchorEl}
+        open={Boolean(anchorEl)}
         onClose={handleClose}
-        anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+        PaperProps={{
+          sx: {
+            width: 320,
+            maxHeight: 400,
+          },
+        }}
       >
-        <Alert
-          onClose={handleClose}
-          severity={currentNotification?.type}
-          variant="filled"
-          sx={{ width: '100%' }}
-        >
-          {currentNotification?.message}
-        </Alert>
-      </Snackbar>
-    </>
+        <List>
+          {notifications.map((notification) => (
+            <ListItem key={notification.id} divider>
+              <ListItemIcon>{notification.icon}</ListItemIcon>
+              <ListItemText
+                primary={notification.message}
+                secondary={notification.time}
+              />
+            </ListItem>
+          ))}
+        </List>
+      </Menu>
+    </Box>
   );
 }; 
