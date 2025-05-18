@@ -24,8 +24,6 @@ export const HealthChart: React.FC<HealthChartProps> = ({
   // Filter out non-numeric values and calculate min/max
   const values = data.map(d => d[metric] as number).filter(v => !isNaN(v));
   const maxValue = Math.max(...values);
-  const minValue = Math.min(...values);
-  const range = maxValue - minValue;
 
   // Get appropriate unit based on metric
   const getUnit = () => {

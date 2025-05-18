@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import {
-  Box,
   Container,
   Grid,
-  Paper,
   Typography,
+  Box,
   Button,
   IconButton,
   useTheme,
@@ -35,7 +34,6 @@ import { HeartRateCard } from './HeartRateCard';
 export const Dashboard: React.FC = () => {
   const [healthData, setHealthData] = useState<HealthData[]>([]);
   const [loading, setLoading] = useState(false);
-  const [lastSync, setLastSync] = useState<string>('');
   const [activeTab, setActiveTab] = useState('overview');
   const { theme, toggleTheme } = useAppTheme();
   const muiTheme = useTheme();
@@ -48,7 +46,6 @@ export const Dashboard: React.FC = () => {
     setLoading(true);
     setTimeout(() => {
       setHealthData(generateMockData());
-      setLastSync(new Date().toISOString());
       setLoading(false);
     }, 1500);
   };

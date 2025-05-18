@@ -1,13 +1,18 @@
-import React, { useState } from 'react';
-import { Fab, Menu, MenuItem, IconButton } from '@mui/material';
+import React from 'react';
+import { Fab } from '@mui/material';
+import { Add as AddIcon } from '@mui/icons-material';
+import { motion } from 'framer-motion';
 import {
-  Add as AddIcon,
+  Menu,
+  MenuItem,
+  IconButton,
+} from '@mui/material';
+import {
   Dashboard as DashboardIcon,
   FitnessCenter as FitnessCenterIcon,
   Flag as FlagIcon,
   Insights as InsightsIcon,
 } from '@mui/icons-material';
-import { motion, AnimatePresence } from 'framer-motion';
 
 interface FloatingNavButtonProps {
   activeTab: string;
@@ -25,7 +30,7 @@ export const FloatingNavButton: React.FC<FloatingNavButtonProps> = ({
   activeTab,
   onNavigate,
 }) => {
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
 
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);

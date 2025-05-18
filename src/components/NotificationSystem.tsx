@@ -4,8 +4,6 @@ import {
   IconButton,
   Badge,
   Menu,
-  MenuItem,
-  Typography,
   List,
   ListItem,
   ListItemText,
@@ -80,7 +78,7 @@ export const NotificationSystem: React.FC = () => {
         }}
       >
         <List>
-          {notifications.map((notification) => (
+          {notifications.map((notification: any) => (
             <ListItem key={notification.id} divider>
               <ListItemIcon>{notification.icon}</ListItemIcon>
               <ListItemText
